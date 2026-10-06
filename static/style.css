@@ -4378,5 +4378,5 @@ html[data-theme="light"] .hero::after { background: linear-gradient(90deg, rgba(
 .column-val { font-size: 13px; font-weight: 700; color: var(--text); }
 .column-label { font-size: 12px; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
-.trend-bar-present { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--success) !important; border-radius: 4px; height: var(--bar-h, 0%); z-index: 2; transition: height 0.8s var(--spring); }
-.trend-bar-late { position: absolute; bottom: var(--bar-bot, 0%); left: 0; width: 100%; background: var(--warning) !important; border-radius: 4px; height: var(--bar-h, 0%); z-index: 1; transition: height 0.8s var(--spring), bottom 0.8s var(--spring); }
+.trend-bar-present { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--success) !important; border-radius: 4px; z-index: 2; transition: height 0.8s var(--spring); display: block; }
+.trend-bar-late { position: absolute; left: 0; width: 100%; background: var(--warning) !important; border-radius: 4px; z-index: 1; transition: height 0.8s var(--spring), bottom 0.8s var(--spring); display: block; }

@@ -219,8 +219,8 @@
         <div class="column" data-tip="{{ day.attendance_date.strftime('%b %d') }}: {{ day.present }} present, {{ day.late }} late">
           <span class="column-val" style="font-size: 11px;">{{ day.attendance_date.strftime('%d/%m') }}</span>
           <div class="column-track">
-            <i class="trend-bar-late" style="--bar-h: {{ day.late_pct }}%; --bar-bot: {{ day.present_pct }}%;"></i>
-            <i class="trend-bar-present" style="--bar-h: {{ day.present_pct }}%;"></i>
+            <div class="trend-bar-late" style="height: {{ day.late_pct }}%; bottom: {{ day.present_pct }}%;"></div>
+            <div class="trend-bar-present" style="height: {{ day.present_pct }}%;"></div>
           </div>
           <span class="column-label" style="font-size: 11px; opacity: 0.7;">Total {{ day.total }}</span>
         </div>
