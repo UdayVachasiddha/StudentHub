@@ -234,10 +234,29 @@ def home():
         max_enrolled = max((course["enrolled"] for course in course_chart), default=1)
         for course in course_chart:
             course["percentage"] = round(course["enrolled"] / max_enrolled * 100) if max_enrolled else 0
+            
+        attendance_trend = query_all("""
+            SELECT attendance_date,
+                   SUM(status='Present') AS present,
+                   SUM(status='Late') AS late,
+                   COUNT(student_id) as total
+            FROM attendance
+            GROUP BY attendance_date
+            ORDER BY attendance_date DESC
+            LIMIT 7
+        """)
+        attendance_trend.reverse()
+        if attendance_trend:
+            max_att = max(day["total"] for day in attendance_trend)
+            for day in attendance_trend:
+                day["present_pct"] = round(day["present"] / day["total"] * 100) if day["total"] else 0
+                day["late_pct"] = round(day["late"] / day["total"] * 100) if day["total"] else 0
+                day["height_pct"] = round(day["total"] / max_att * 100) if max_att else 0
+
     except Error:
-        metrics, recent, course_chart = {"total_students": 0, "active_students": 0, "total_courses": 0}, [], []
+        metrics, recent, course_chart, attendance_trend = {"total_students": 0, "active_students": 0, "total_courses": 0}, [], [], []
         flash("MySQL is not connected yet. Check your database configuration.", "error")
-    return render_template("index.html", recent=recent, course_chart=course_chart, **metrics)
+    return render_template("index.html", recent=recent, course_chart=course_chart, attendance_trend=attendance_trend, **metrics)
 
 
 @app.get("/students")

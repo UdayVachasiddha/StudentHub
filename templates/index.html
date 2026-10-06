@@ -1,15 +1,13 @@
 {% extends 'base.html' %}
 {% from 'icons.html' import icon %}
 
-{% block title %}Dashboard · StudentHub{% endblock %}
+{% block title %}Dashboard ┬╖ StudentHub{% endblock %}
 
 {% block content %}
 <main class="page">
   <!-- Hero greeting banner -->
-  <section class="hero reveal" style="--d:0; background: url('{{ url_for('static', filename='hero_bg.jpg') }}') center/cover; position: relative; border-radius: var(--r-xl); padding: 48px; margin-bottom: 24px; color: #fff; overflow: hidden; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border);">
-    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,25,0.98) 0%, rgba(11,15,25,0.7) 40%, transparent 100%); z-index: 0; pointer-events: none;"></div>
-    
-    <div style="position: relative; z-index: 1; max-width: 640px;">
+  <section class="hero reveal" style="--d:0">
+    <div>
       <div class="eyebrow" style="color: #38bdf8;">Workspace</div>
       <h1 style="color: #fff; font-size: 2.5rem; margin-bottom: 16px;">Good to see you, {{ current_user.full_name.split(' ')[0] }} <span class="wave">👋</span></h1>
       <p class="lead" style="color: rgba(255,255,255,0.85); font-size: 16px; margin-bottom: 24px;">
