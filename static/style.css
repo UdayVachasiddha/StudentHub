@@ -4350,18 +4350,30 @@ tr[data-status="Absent"] td:first-child {
 /* ---------- Hero Banner ---------- */
 .hero { position: relative; border-radius: var(--r-xl); padding: 48px; margin-bottom: 24px; color: #fff; overflow: hidden; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); background: url('hero_banner_v2.jpg') center/cover; }
 .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,25,0.98) 0%, rgba(11,15,25,0.7) 40%, transparent 100%); z-index: 0; pointer-events: none; }
-html[data-theme="light"] .hero::after { background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); }
+html[data-theme="light"] .hero { background: url('hero_banner_light.jpg') center/cover; color: var(--text); }
+html[data-theme="light"] .hero::after { background: linear-gradient(90deg, rgba(243,245,251,0.95) 0%, rgba(243,245,251,0.6) 50%, transparent 100%); }
 .hero > div { position: relative; z-index: 1; max-width: 640px; }
+.hero-eyebrow { color: #38bdf8; font-weight: 700; letter-spacing: 1px; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; }
+html[data-theme="light"] .hero-eyebrow { color: var(--primary); }
+.hero-title { font-size: 2.5rem; margin-bottom: 16px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; color: inherit; }
+.hero-lead { font-size: 16px; margin-bottom: 24px; opacity: 0.85; max-width: 480px; line-height: 1.5; color: inherit; }
 .hero-visual { position: relative; display: flex; align-items: center; justify-content: center; min-height: 220px; flex: 0 0 320px; z-index: 1; }
 .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--r-lg); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); color: #fff; }
+html[data-theme="light"] .hero .glass-card { background: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.8); box-shadow: 0 8px 32px rgba(0,0,0,0.05); color: var(--text); }
+.btn-glass { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); color: inherit; }
+.btn-glass:hover { background: rgba(255,255,255,0.2); color: inherit; }
+html[data-theme="light"] .btn-glass { background: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.9); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+html[data-theme="light"] .btn-glass:hover { background: rgba(255,255,255,0.9); }
 .hero-ring-card { padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 2; }
-.hero-chip { position: absolute; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; border-radius: 100px; white-space: nowrap; z-index: 3; }
-.hero-chip .icon { width: 16px; height: 16px; }
+.hero-chip { position: absolute; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; border-radius: 100px; white-space: nowrap; z-index: 3; background: var(--surface); color: var(--text); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+html[data-theme="light"] .hero-chip { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 .float-a { top: -15px; left: -20px; animation: float-chip 4s ease-in-out infinite; }
 .float-b { bottom: -15px; right: -20px; animation: float-chip 5s ease-in-out infinite alternate; }
 @keyframes float-chip { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .ring { position: relative; width: var(--size, 100px); height: var(--size, 100px); border-radius: 50%; background: conic-gradient(rgba(255, 255, 255, 0.8) calc(var(--ring) * 1%), rgba(255, 255, 255, 0.1) calc(var(--ring) * 1%)); display: flex; align-items: center; justify-content: center; }
+html[data-theme="light"] .ring { background: conic-gradient(var(--primary) calc(var(--ring) * 1%), rgba(0, 0, 0, 0.05) calc(var(--ring) * 1%)); }
 .ring::before { content: ''; position: absolute; inset: var(--thick, 8px); border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); }
+html[data-theme="light"] .ring::before { background: rgba(255,255,255,0.7); }
 .ring > div { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
 .ring strong { font-size: 24px; font-weight: 800; }
 .ring small { font-size: 11px; opacity: 0.8; }
