@@ -100,8 +100,8 @@
     </article>
   </section>
 
-  <!-- Main section: Recent students & Course enrolment distribution -->
-  <section class="grid grid-main reveal" style="--d:2">
+  <!-- Main section: Recent students, Course enrolment, & Attendance Trends -->
+  <section class="grid grid-3 reveal" style="--d:2">
     <!-- Recent Students Panel -->
     <article class="card spot">
       <div class="card-head">
@@ -189,6 +189,54 @@
         </div>
         <h3>No courses available</h3>
         <p>Set up academic courses to visualize enrollment trends.</p>
+      </div>
+      {% endif %}
+    </article>
+
+    <!-- Attendance Trends Visualizer -->
+    <article class="card spot">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-green">
+            {{ icon('attendance') }}
+          </div>
+          <div>
+            <h2>Attendance Trends</h2>
+            <p>7-day presence &amp; punctuality</p>
+          </div>
+        </div>
+        {% if can_teach %}
+        <a href="{{ url_for('attendance') }}" class="link">
+          <span>Manage</span>
+          <span class="icon">{{ icon('chevron-right') }}</span>
+        </a>
+        {% endif %}
+      </div>
+
+      {% if attendance_trend %}
+      <div class="columns">
+        {% for day in attendance_trend %}
+        <div class="column" data-tip="{{ day.attendance_date.strftime('%b %d') }}: {{ day.present }} present, {{ day.late }} late">
+          <span class="column-val" style="font-size: 11px;">{{ day.attendance_date.strftime('%d/%m') }}</span>
+          <div class="column-track">
+            <i class="trend-bar-late" style="--bar-h: {{ day.late_pct }}%; --bar-bot: {{ day.present_pct }}%;"></i>
+            <i class="trend-bar-present" style="--bar-h: {{ day.present_pct }}%;"></i>
+          </div>
+          <span class="column-label" style="font-size: 11px; opacity: 0.7;">Total {{ day.total }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <div style="display: flex; gap: 16px; font-size: 11px; margin-top: 16px; justify-content: center; opacity: 0.8;">
+        <span style="display: flex; align-items: center; gap: 6px;"><i style="display:inline-block; width:8px; height:8px; background: var(--success); border-radius:2px;"></i> Present</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><i style="display:inline-block; width:8px; height:8px; background: var(--warning); border-radius:2px;"></i> Late</span>
+      </div>
+      {% else %}
+      <div class="empty">
+        <div class="tile tile-lg c-slate">
+          {{ icon('attendance') }}
+        </div>
+        <h3>No attendance data</h3>
+        <p>Start recording daily roll calls to see trends.</p>
       </div>
       {% endif %}
     </article>
