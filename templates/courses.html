@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Courses · Academic Catalogue{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Curriculum</div>
+      <h1>Courses</h1>
+      <p class="sub">Track course capacities, instructors, and student enrollment.</p>
+    </div>
+  </div>
+
+  <section class="grid grid-side reveal" style="--d:1">
+    <!-- Courses Grid List -->
+    <div class="card spot">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-sky">{{ icon('courses') }}</div>
+          <div>
+            <h2>All Courses ({{ courses|length }})</h2>
+            <p>Active course offerings</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-grid">
+        {% for course in courses %}
+        {% set occupancy = (course.enrolled / (course.capacity or 1) * 100)|round|int %}
+        <div class="card spot lift course-card" style="--h: {{ loop.index0 * 60 + 200 }};">
+          <div class="course-top">
+            <span class="badge badge-primary no-dot">{{ course.duration_weeks }} Weeks</span>
+            <span class="muted" style="font-size: 12px;">ID: #{{ course.id }}</span>
+          </div>
+
+          <div>
+            <h3>{{ course.name }}</h3>
+            <ul class="course-meta" style="margin-top: 8px;">
+              <li>
+                {{ icon('user') }}
+                <span>{{ course.instructor }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div style="margin-top: auto; padding-top: 10px;">
+            <div class="cap-row">
+              <span>Capacity Occupancy</span>
+              <b>{{ course.enrolled }} / {{ course.capacity }}</b>
+            </div>
+            <div class="progress {{ 't-danger' if occupancy >= 95 else ('t-warning' if occupancy >= 75 else 't-success') }}">
+              <i data-width="{{ occupancy }}"></i>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty full" style="grid-column: 1 / -1;">
+          <div class="tile tile-lg c-slate">{{ icon('courses') }}</div>
+          <h3>No courses created yet</h3>
+          <p>Create your first program using the form to start enrolling students.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Create Course Form Sticky Card -->
+    <div class="card spot sticky">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-violet">{{ icon('plus') }}</div>
+          <div>
+            <h2>Create Course</h2>
+            <p>Establish a new program</p>
+          </div>
+        </div>
+      </div>
+
+      <form method="post" action="{{ url_for('courses') }}" class="form-stack">
+        <div class="field">
+          <label class="label" for="course-name">Course Name <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('book') }}
+            <input id="course-name" name="name" class="input" placeholder="e.g. Data Science with Python" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="course-instructor">Lead Instructor <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="course-instructor" name="instructor" class="input" placeholder="e.g. Dr. Alan Turing" required>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="label" for="duration_weeks">Duration (wks)</label>
+            <input id="duration_weeks" type="number" min="1" max="104" name="duration_weeks" class="input" value="12" required>
+          </div>
+
+          <div class="field">
+            <label class="label" for="capacity">Student Capacity</label>
+            <input id="capacity" type="number" min="1" max="500" name="capacity" class="input" value="30" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 8px;">
+          {{ icon('plus') }}
+          <span>Create New Course</span>
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}

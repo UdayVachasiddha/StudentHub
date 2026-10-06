@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Student Registration · StudentHub{% endblock %}
+
+{% block auth_content %}
+<div class="auth-theme">
+  <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <span class="i-moon">{{ icon('moon') }}</span>
+    <span class="i-sun">{{ icon('sun') }}</span>
+  </button>
+</div>
+
+<main class="auth-layout">
+  <!-- Left Side: Registration Showcase -->
+  <section class="auth-showcase">
+    <a class="brand" href="{{ url_for('login') }}">
+      <span class="brand-mark">SH</span>
+      <span>Student<b>Hub</b></span>
+    </a>
+
+    <div class="showcase-copy">
+      <div class="eyebrow">Student Onboarding</div>
+      <h2>Begin Your Academic Journey</h2>
+      <p>Submit your application and enroll in programs directly through the self-service student registration portal.</p>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div>
+            <b>Register Account</b>
+            <small>Provide your personal details &amp; pick your desired course.</small>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-num">2</span>
+          <div>
+            <b>Staff Review</b>
+            <small>Admissions staff verify details and transition status to Active.</small>
+          </div>
+        </div>
+
+        <div class="step">
+          <span class="step-num">3</span>
+          <div>
+            <b>Portal Access</b>
+            <small>Access grades, course materials, attendance records, and files.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-foot">
+      <span>StudentHub Academic Suite &copy; 2026</span>
+    </div>
+  </section>
+
+  <!-- Right Side: Registration Form -->
+  <section class="auth-panel">
+    <div class="auth-card wide">
+      <a class="brand mobile-brand" href="{{ url_for('login') }}">
+        <span class="brand-mark">SH</span>
+        <span>Student<b>Hub</b></span>
+      </a>
+
+      <div class="eyebrow">Self Registration</div>
+      <h1>Create student account</h1>
+      <p class="sub">Your account starts in pending status until reviewed by academic staff.</p>
+
+      <form method="post" action="{{ url_for('signup') }}" class="auth-form form-grid">
+        <!-- Full Name -->
+        <div class="field full">
+          <label class="label" for="full_name">Full Name <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="full_name" name="full_name" class="input" placeholder="e.g. Johnathan Doe" required autofocus autocomplete="name">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label class="label" for="email">Email Address <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('mail') }}
+            <input id="email" type="email" name="email" class="input" placeholder="johnathan@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="field">
+          <label class="label" for="username">Choose Username <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="username" name="username" class="input" placeholder="johndoe" required autocomplete="username">
+          </div>
+        </div>
+
+        <!-- Course Program -->
+        <div class="field full">
+          <label class="label" for="course_id">Intended Course <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('courses') }}
+            <select id="course_id" name="course_id" class="select" required>
+              <option value="">Select a course of study</option>
+              {% for course in courses %}
+              <option value="{{ course.id }}">{{ course.name }} ({{ course.duration_weeks }} Weeks)</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label class="label" for="password">Password <span class="req">*</span></label>
+          <div class="control has-icon has-action">
+            {{ icon('shield') }}
+            <input id="password" type="password" name="password" minlength="8" class="input" placeholder="At least 8 chars" required autocomplete="new-password">
+            <button type="button" class="input-action" data-toggle-password aria-label="Show password">
+              <span class="i-eye">{{ icon('eye') }}</span>
+              <span class="i-eye-off">{{ icon('eye-off') }}</span>
+            </button>
+          </div>
+          <!-- Strength indicator -->
+          <div class="strength" data-strength="password">
+            <div class="strength-bars">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <span class="strength-label">Use at least 8 characters</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="field">
+          <label class="label" for="confirm_password">Confirm Password <span class="req">*</span></label>
+          <div class="control has-icon has-action">
+            {{ icon('shield') }}
+            <input id="confirm_password" type="password" name="confirm_password" minlength="8" class="input" placeholder="Re-enter password" required autocomplete="new-password" data-match="password">
+            <button type="button" class="input-action" data-toggle-password aria-label="Show password">
+              <span class="i-eye">{{ icon('eye') }}</span>
+              <span class="i-eye-off">{{ icon('eye-off') }}</span>
+            </button>
+          </div>
+          <span class="match-hint"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="full" style="margin-top: 6px;">
+          <button type="submit" class="btn btn-primary btn-block btn-lg">
+            <span>Submit Registration</span>
+            <span class="arrow">{{ icon('arrow-right') }}</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="auth-switch">
+        Already registered with an institutional account? <a href="{{ url_for('login') }}">Sign in here</a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

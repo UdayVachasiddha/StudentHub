@@ -1,0 +1,240 @@
+{% from "icons.html" import icon %}
+<!doctype html>
+<html lang="en" data-theme="dark" class="js">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b16">
+  <meta name="description"
+    content="StudentHub - Modern student operations, academic progress tracking, and attendance system.">
+  <title>{% block title %}StudentHub · Academic Portal{% endblock %}</title>
+
+  <!-- Typography: Google Fonts Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='4.1') }}">
+  <script>
+    // Early theme initialization to avoid flash of incorrect theme
+    try {
+      const savedTheme = localStorage.getItem('sh-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.dataset.theme = savedTheme;
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = savedTheme === 'light' ? '#f3f5fb' : '#070b16';
+    } catch (e) { }
+  </script>
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+
+<body>
+  <!-- Ambient background glowing orbs -->
+  <div class="bg-orbs" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  {% if current_user %}
+  <!-- Mobile backdrop -->
+  <div class="sidebar-backdrop" data-sidebar-close aria-hidden="true"></div>
+
+  <!-- Sidebar navigation -->
+  <aside class="sidebar" id="app-sidebar" aria-label="Main Navigation">
+    <a class="brand" href="{{ url_for('home') }}">
+      <span class="brand-mark">SH</span>
+      <span>Student<b>Hub</b></span>
+    </a>
+
+    <nav class="side-nav">
+      <div class="nav-label">Workspace</div>
+      <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+        {{ icon('dashboard') }}
+        <span>Dashboard</span>
+      </a>
+      <a href="{{ url_for('students') }}"
+        class="nav-link {% if request.endpoint in ['students', 'student_profile', 'add_student', 'edit_student'] %}active{% endif %}">
+        {{ icon('students') }}
+        <span>Students</span>
+      </a>
+      {% if can_manage %}
+      <a href="{{ url_for('courses') }}" class="nav-link {% if request.endpoint == 'courses' %}active{% endif %}">
+        {{ icon('courses') }}
+        <span>Courses</span>
+      </a>
+      {% endif %}
+      {% if can_teach %}
+      <a href="{{ url_for('attendance') }}" class="nav-link {% if request.endpoint == 'attendance' %}active{% endif %}">
+        {{ icon('attendance') }}
+        <span>Attendance</span>
+      </a>
+      {% endif %}
+
+      {% if current_user.role == 'admin' %}
+      <div class="nav-label">Admin</div>
+      <a href="{{ url_for('team') }}" class="nav-link {% if request.endpoint == 'team' %}active{% endif %}">
+        {{ icon('team') }}
+        <span>Team & Roles</span>
+      </a>
+      <a href="{{ url_for('activity') }}" class="nav-link {% if request.endpoint == 'activity' %}active{% endif %}">
+        {{ icon('activity') }}
+        <span>Audit Log</span>
+      </a>
+      {% endif %}
+
+      <div class="nav-label">System</div>
+      <a href="{{ url_for('notifications') }}"
+        class="nav-link {% if request.endpoint == 'notifications' %}active{% endif %}">
+        {{ icon('bell') }}
+        <span>Notifications</span>
+        {% if unread_notifications %}
+        <span class="nav-count">{{ unread_notifications }}</span>
+        {% endif %}
+      </a>
+      <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+        {{ icon('info') }}
+        <span>About</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="side-user">
+        <span class="avatar avatar-sm">{{ current_user.full_name[:2]|upper }}</span>
+        <div class="grow">
+          <b>{{ current_user.full_name }}</b>
+          <small>{{ current_user.role }}</small>
+        </div>
+      </div>
+      <a href="{{ url_for('logout') }}" class="icon-btn btn-ghost" title="Sign out" aria-label="Sign out">
+        {{ icon('log-out') }}
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Application Shell -->
+  <div class="shell">
+    <header class="topbar">
+      <button type="button" class="icon-btn menu-btn" data-sidebar-toggle aria-label="Toggle navigation"
+        aria-controls="app-sidebar" aria-expanded="false">
+        {{ icon('menu') }}
+      </button>
+
+      <form class="search" action="{{ url_for('students') }}" method="get" role="search">
+        {{ icon('search') }}
+        <input type="search" id="global-search" name="q" class="input" placeholder="Search students, courses..."
+          autocomplete="off" value="{{ request.args.get('q', '') if request.endpoint == 'students' else '' }}">
+        <span class="kbd">/</span>
+      </form>
+
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Toggle theme">
+          <span class="i-moon">{{ icon('moon') }}</span>
+          <span class="i-sun">{{ icon('sun') }}</span>
+        </button>
+
+        <a href="{{ url_for('notifications') }}" class="icon-btn" aria-label="Notifications" title="Notifications">
+          {{ icon('bell') }}
+          {% if unread_notifications %}
+          <span class="dot"></span>
+          {% endif %}
+        </a>
+
+        <div class="dropdown" data-dropdown>
+          <button type="button" class="user-btn" data-dropdown-trigger aria-expanded="false" aria-label="User menu">
+            <span class="avatar avatar-sm">{{ current_user.full_name[:2]|upper }}</span>
+            <div class="user-meta">
+              <b>{{ current_user.full_name.split(' ')[0] }}</b>
+              <small>{{ current_user.role }}</small>
+            </div>
+            <span class="chev">{{ icon('chevron-down') }}</span>
+          </button>
+          <div class="dropdown-menu" role="menu">
+            <div class="dropdown-head">
+              <b>{{ current_user.full_name }}</b>
+              <small>@{{ current_user.username }} · {{ current_user.role|title }}</small>
+            </div>
+            {% if current_user.student_id %}
+            <a href="{{ url_for('student_profile', student_id=current_user.student_id) }}" role="menuitem">
+              {{ icon('user') }}
+              <span>My Student Profile</span>
+            </a>
+            {% endif %}
+            <a href="{{ url_for('notifications') }}" role="menuitem">
+              {{ icon('bell') }}
+              <span>Notifications ({{ unread_notifications }})</span>
+            </a>
+            <a href="{{ url_for('about') }}" role="menuitem">
+              {{ icon('info') }}
+              <span>About System</span>
+            </a>
+            <hr>
+            <a href="{{ url_for('logout') }}" class="danger" role="menuitem">
+              {{ icon('log-out') }}
+              <span>Sign Out</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="app-footer">
+      <div>
+        <b>StudentHub</b> &copy; {{ now.year if now else '2026' }} · Academic Operations Platform
+      </div>
+      <div>
+        <span>Crafted with Python Flask & MySQL</span>
+      </div>
+    </footer>
+  </div>
+  {% else %}
+  <!-- Unauthenticated layout: direct content -->
+  {% block auth_content %}{% block unauth_content %}{% block content_unauth %}{% endblock %}{% endblock %}{% endblock %}
+  {% endif %}
+
+  <!-- Flash Toasts Container -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <aside class="toasts" aria-live="polite" aria-atomic="true">
+    {% for category, message in messages %}
+    <div class="toast toast-{{ 'error' if category == 'error' else 'success' }}" role="status">
+      <span class="toast-icon">
+        {% if category == 'error' %}
+        {{ icon('alert-triangle') }}
+        {% else %}
+        {{ icon('check') }}
+        {% endif %}
+      </span>
+      <p>{{ message }}</p>
+      <button type="button" class="toast-close" aria-label="Dismiss">
+        {{ icon('close') }}
+      </button>
+      <div class="toast-bar"></div>
+    </div>
+    {% endfor %}
+  </aside>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Universal Confirmation Modal -->
+  <div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title"
+    aria-describedby="confirm-text">
+    <div class="modal-card">
+      <div class="tile tile-lg c-red">
+        {{ icon('trash') }}
+      </div>
+      <h2 id="confirm-title">Are you sure?</h2>
+      <p id="confirm-text">This action cannot be undone.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-modal-cancel>Cancel</button>
+        <button type="button" class="btn btn-danger solid" data-modal-confirm>Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

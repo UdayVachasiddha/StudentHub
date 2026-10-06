@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Activity History · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page narrow">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Security</div>
+      <h1>Audit Log</h1>
+      <p class="sub">Chronological record of system actions and updates.</p>
+    </div>
+  </div>
+
+  <section class="card spot reveal" style="--d:1">
+    <div class="card-head">
+      <div class="card-title">
+        <div class="tile tile-sm c-violet">{{ icon('activity') }}</div>
+        <div>
+          <h2>Events ({{ history|length }})</h2>
+          <p>Logged system modifications</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      {% for item in history %}
+      {% set entity = item.entity_type|lower %}
+      <div class="tl-item {% if loop.last %}last{% endif %}">
+        {% if entity == 'student' %}
+          <div class="tile c-violet">{{ icon('students') }}</div>
+        {% elif entity == 'course' %}
+          <div class="tile c-sky">{{ icon('courses') }}</div>
+        {% elif entity == 'attendance' %}
+          <div class="tile c-green">{{ icon('attendance') }}</div>
+        {% elif entity == 'assessment' %}
+          <div class="tile c-amber">{{ icon('award') }}</div>
+        {% elif entity == 'document' %}
+          <div class="tile c-pink">{{ icon('document') }}</div>
+        {% else %}
+          <div class="tile c-slate">{{ icon('activity') }}</div>
+        {% endif %}
+
+        <div>
+          <b>{{ item.action }}</b>
+          <p style="margin-top: 3px; font-size: 13px;">
+            Triggered by <strong>{{ item.user_name }}</strong>
+            <span class="badge no-dot" style="margin-left: 6px; font-size: 10.5px;">{{ item.entity_type|title }}</span>
+          </p>
+        </div>
+
+        <div class="tl-time">
+          <time data-ago datetime="{{ item.created_at }}">{{ item.created_at }}</time>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty">
+        <div class="tile tile-lg c-slate">{{ icon('activity') }}</div>
+        <h3>No activity logged yet</h3>
+        <p>Actions performed across the application will appear here in chronological order.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

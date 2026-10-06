@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Sign In · StudentHub Portal{% endblock %}
+
+{% block auth_content %}
+<div class="auth-theme">
+  <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <span class="i-moon">{{ icon('moon') }}</span>
+    <span class="i-sun">{{ icon('sun') }}</span>
+  </button>
+</div>
+
+<main class="auth-layout">
+  <!-- Left Side: Visual Showcase -->
+  <section class="auth-showcase">
+    <a class="brand" href="{{ url_for('login') }}">
+      <span class="brand-mark">SH</span>
+      <span>Student<b>Hub</b></span>
+    </a>
+
+    <div class="showcase-copy">
+      <div class="eyebrow">Academic Operations Workspace</div>
+      <h2>Intelligent Student &amp; Academic Management</h2>
+      <p>Streamline roll calls, track assessments, and maintain synchronized records with enterprise reliability.</p>
+
+      <ul class="showcase-list">
+        <li>
+          <span class="check">{{ icon('check') }}</span>
+          <span>Unified student directory with instant search &amp; filters</span>
+        </li>
+        <li>
+          <span class="check">{{ icon('check') }}</span>
+          <span>Daily attendance tracking with presence ratios</span>
+        </li>
+        <li>
+          <span class="check">{{ icon('check') }}</span>
+          <span>Assessment grading and cumulative academic averages</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Floating visual glass cards -->
+    <div class="showcase-cards" aria-hidden="true">
+      <div class="glass-card gc-1">
+        <span class="gc-icon">{{ icon('students') }}</span>
+        <div>
+          <b>Active Enrolment</b>
+          <small>Real-time cohort roster</small>
+        </div>
+        <div class="mini-bars">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+
+      <div class="glass-card gc-2">
+        <span class="gc-icon">{{ icon('attendance') }}</span>
+        <div>
+          <b>Daily Attendance</b>
+          <small>96.4% on-time presence</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-foot">
+      <span>StudentHub Academic Suite &copy; 2026</span>
+    </div>
+  </section>
+
+  <!-- Right Side: Authentication Form -->
+  <section class="auth-panel">
+    <div class="auth-card">
+      <a class="brand mobile-brand" href="{{ url_for('login') }}">
+        <span class="brand-mark">SH</span>
+        <span>Student<b>Hub</b></span>
+      </a>
+
+      <div class="eyebrow">Secure Portal Login</div>
+      <h1>Welcome back</h1>
+      <p class="sub">Enter your credentials to access your administrative workspace.</p>
+
+      <form method="post" action="{{ url_for('login') }}" class="auth-form">
+        <div class="field">
+          <label class="label" for="username">Username</label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="username" name="username" class="input" placeholder="Enter your username" required autofocus autocomplete="username">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <div class="control has-icon has-action">
+            {{ icon('shield') }}
+            <input id="password" type="password" name="password" class="input" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="input-action" data-toggle-password aria-label="Show password">
+              <span class="i-eye">{{ icon('eye') }}</span>
+              <span class="i-eye-off">{{ icon('eye-off') }}</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <span>Sign In to Dashboard</span>
+          <span class="arrow">{{ icon('arrow-right') }}</span>
+        </button>
+      </form>
+
+      <!-- Quick demo login helper -->
+      <div class="demo-box">
+        <span class="icon">{{ icon('sparkles') }}</span>
+        <div>
+          <b>Initial Local Administrator</b>
+          <span>admin / admin123</span>
+        </div>
+        <button type="button" class="btn btn-sm" data-fill="admin:admin123">
+          Auto-fill
+        </button>
+      </div>
+
+      <div class="auth-switch">
+        New student without an account? <a href="{{ url_for('signup') }}">Register here</a>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

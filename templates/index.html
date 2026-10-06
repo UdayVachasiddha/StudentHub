@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Dashboard · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Hero greeting banner -->
+  <section class="hero reveal" style="--d:0; background: url('{{ url_for('static', filename='hero_bg.jpg') }}') center/cover; position: relative; border-radius: var(--r-xl); padding: 48px; margin-bottom: 24px; color: #fff; overflow: hidden; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border);">
+    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,25,0.98) 0%, rgba(11,15,25,0.7) 40%, transparent 100%); z-index: 0; pointer-events: none;"></div>
+    
+    <div style="position: relative; z-index: 1; max-width: 640px;">
+      <div class="eyebrow" style="color: #38bdf8;">Workspace</div>
+      <h1 style="color: #fff; font-size: 2.5rem; margin-bottom: 16px;">Good to see you, {{ current_user.full_name.split(' ')[0] }} <span class="wave">👋</span></h1>
+      <p class="lead" style="color: rgba(255,255,255,0.85); font-size: 16px; margin-bottom: 24px;">
+        Monitor student records, attendance rates, and course enrollment in real time. Enjoy the new professional workspace layout.
+      </p>
+      <div class="hero-actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
+        {% if can_manage %}
+        <a class="btn btn-primary" href="{{ url_for('add_student') }}" style="box-shadow: 0 4px 14px rgba(0,0,0,0.5);">
+          {{ icon('plus') }}
+          <span>New Student</span>
+        </a>
+        <a class="btn btn-glass" href="{{ url_for('courses') }}">
+          {{ icon('courses') }}
+          <span>Manage Courses</span>
+        </a>
+        {% endif %}
+        {% if can_teach %}
+        <a class="btn btn-glass" href="{{ url_for('attendance') }}">
+          {{ icon('attendance') }}
+          <span>Mark Attendance</span>
+        </a>
+        {% endif %}
+        <a class="btn btn-glass" href="{{ url_for('students') }}">
+          {{ icon('students') }}
+          <span>View Directory</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Metric stat cards -->
+  <section class="grid grid-3 reveal" style="--d:1">
+    <!-- Stat 1: Total Students -->
+    <article class="card stat spot lift c-violet">
+      <div class="stat-top">
+        <div>
+          <span class="stat-label">Total Students</span>
+          <div class="stat-value" data-count="{{ total_students }}">0</div>
+        </div>
+        <div class="tile">
+          {{ icon('students') }}
+        </div>
+      </div>
+      <div class="stat-foot">
+        <span class="trend">
+          {{ icon('trending-up') }}
+          Directory
+        </span>
+        <span>Across all departments</span>
+      </div>
+    </article>
+
+    <!-- Stat 2: Active Enrolments -->
+    <article class="card stat spot lift c-green">
+      <div class="stat-top">
+        <div>
+          <span class="stat-label">Active Students</span>
+          <div class="stat-value" data-count="{{ active_students }}">0</div>
+        </div>
+        <div class="tile">
+          {{ icon('check') }}
+        </div>
+      </div>
+      <div class="stat-foot">
+        <div class="progress t-success grow">
+          <i data-width="{{ active_rate }}"></i>
+        </div>
+        <span>{{ active_rate }}% active ratio</span>
+      </div>
+    </article>
+
+    <!-- Stat 3: Courses Running -->
+    <article class="card stat spot lift c-sky">
+      <div class="stat-top">
+        <div>
+          <span class="stat-label">Active Courses</span>
+          <div class="stat-value" data-count="{{ total_courses }}">0</div>
+        </div>
+        <div class="tile">
+          {{ icon('courses') }}
+        </div>
+      </div>
+      <div class="stat-foot">
+        <span class="trend">
+          {{ icon('award') }}
+          Programs
+        </span>
+        <span>All curriculums</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- Main section: Recent students & Course enrolment distribution -->
+  <section class="grid grid-main reveal" style="--d:2">
+    <!-- Recent Students Panel -->
+    <article class="card spot">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-violet">
+            {{ icon('students') }}
+          </div>
+          <div>
+            <h2>Recent Students</h2>
+            <p>Latest enrolled students</p>
+          </div>
+        </div>
+        <a href="{{ url_for('students') }}" class="link">
+          <span>View all students</span>
+          <span class="icon">{{ icon('chevron-right') }}</span>
+        </a>
+      </div>
+
+      <div class="list">
+        {% for student in recent %}
+        <a class="list-row" href="{{ url_for('student_profile', student_id=student.id) }}">
+          <span class="avatar avatar-sm">{{ student.name[:2]|upper }}</span>
+          <div class="grow">
+            <b>{{ student.name }}</b>
+            <small>{{ student.course_name or 'General Program' }} &bull; <span class="mono">{{ student.student_code
+                }}</span></small>
+          </div>
+          <span class="badge badge-{{ student.status|lower }}">{{ student.status }}</span>
+          <span class="chev">{{ icon('chevron-right') }}</span>
+        </a>
+        {% else %}
+        <div class="empty">
+          <div class="tile tile-lg c-slate">
+            {{ icon('students') }}
+          </div>
+          <h3>No students registered yet</h3>
+          <p>Begin by adding your first student record to build the registry.</p>
+          {% if can_manage %}
+          <a class="btn btn-primary" href="{{ url_for('add_student') }}">
+            {{ icon('plus') }}
+            <span>Add Student</span>
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </article>
+
+    <!-- Course Enrolment Visualizer -->
+    <article class="card spot">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-sky">
+            {{ icon('courses') }}
+          </div>
+          <div>
+            <h2>Course Enrollment</h2>
+            <p>Student distribution across programs</p>
+          </div>
+        </div>
+        {% if can_manage %}
+        <a href="{{ url_for('courses') }}" class="link">
+          <span>Manage</span>
+          <span class="icon">{{ icon('chevron-right') }}</span>
+        </a>
+        {% endif %}
+      </div>
+
+      {% if course_chart %}
+      <div class="columns">
+        {% for course in course_chart %}
+        <div class="column" data-tip="{{ course.name }}: {{ course.enrolled }} enrolled ({{ course.percentage }}%)">
+          <span class="column-val">{{ course.enrolled }}</span>
+          <div class="column-track">
+            <i data-height="{{ course.percentage }}" style="--h: {{ loop.index0 * 55 + 210 }};"></i>
+          </div>
+          <span class="column-label">{{ course.name }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">
+        <div class="tile tile-lg c-slate">
+          {{ icon('courses') }}
+        </div>
+        <h3>No courses available</h3>
+        <p>Set up academic courses to visualize enrollment trends.</p>
+      </div>
+      {% endif %}
+    </article>
+  </section>
+
+  <!-- Quick Access Toolbar for Staff / Admin -->
+  <section class="grid grid-3 reveal" style="--d:3">
+    <a href="{{ url_for('students') }}" class="card action-card spot lift c-violet">
+      <div class="tile">
+        {{ icon('search') }}
+      </div>
+      <div>
+        <b>Student Directory</b>
+        <small>Search and export student records</small>
+      </div>
+      <span class="chev">{{ icon('chevron-right') }}</span>
+    </a>
+
+    {% if can_teach %}
+    <a href="{{ url_for('attendance') }}" class="card action-card spot lift c-green">
+      <div class="tile">
+        {{ icon('attendance') }}
+      </div>
+      <div>
+        <b>Attendance Register</b>
+        <small>Track daily roll calls and status</small>
+      </div>
+      <span class="chev">{{ icon('chevron-right') }}</span>
+    </a>
+    {% endif %}
+
+    {% if can_manage %}
+    <a href="{{ url_for('courses') }}" class="card action-card spot lift c-sky">
+      <div class="tile">
+        {{ icon('courses') }}
+      </div>
+      <div>
+        <b>Courses & Classes</b>
+        <small>Manage offerings and capacity</small>
+      </div>
+      <span class="chev">{{ icon('chevron-right') }}</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('about') }}" class="card action-card spot lift c-sky">
+      <div class="tile">
+        {{ icon('info') }}
+      </div>
+      <div>
+        <b>About System</b>
+        <small>Learn how StudentHub works</small>
+      </div>
+      <span class="chev">{{ icon('chevron-right') }}</span>
+    </a>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

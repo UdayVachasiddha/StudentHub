@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Students Directory · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Directory</div>
+      <h1>Students</h1>
+      <p class="sub">Manage, filter, and export student records.</p>
+    </div>
+
+    <div class="actions">
+      {% if can_manage %}
+      <a href="{{ url_for('export_students_csv') }}" class="btn btn-ghost" title="Export as CSV">
+        {{ icon('download') }}
+        <span>CSV</span>
+      </a>
+      <a href="{{ url_for('export_students_pdf') }}" class="btn btn-ghost" title="Export as PDF">
+        {{ icon('document') }}
+        <span>PDF</span>
+      </a>
+      <a href="{{ url_for('add_student') }}" class="btn btn-primary">
+        {{ icon('plus') }}
+        <span>Add Student</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Filters & Toolbar -->
+  <section class="card spot reveal" style="--d:1">
+    <form class="toolbar" method="get" action="{{ url_for('students') }}" data-autosubmit>
+      <!-- Live Search -->
+      <div class="control has-icon grow">
+        {{ icon('search') }}
+        <input type="search" name="q" class="input" placeholder="Search by name, ID, or email..." value="{{ filters.q or '' }}" data-live-search autocomplete="off">
+      </div>
+
+      <!-- Course select -->
+      <div class="control">
+        <select name="course" class="select" aria-label="Filter by course">
+          <option value="">All Courses</option>
+          {% for course in courses %}
+          <option value="{{ course.id }}" {% if filters.course == course.id %}selected{% endif %}>
+            {{ course.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Status select -->
+      <div class="control">
+        <select name="status" class="select" aria-label="Filter by status">
+          <option value="">All Statuses</option>
+          <option value="Active" {% if filters.status == 'Active' %}selected{% endif %}>Active Only</option>
+          <option value="Pending" {% if filters.status == 'Pending' %}selected{% endif %}>Pending Review</option>
+        </select>
+      </div>
+
+      <!-- Sort select -->
+      <div class="control">
+        <select name="sort" class="select" aria-label="Sort order">
+          <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest Added</option>
+          <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>Name (A–Z)</option>
+          <option value="course" {% if filters.sort == 'course' %}selected{% endif %}>Course Name</option>
+        </select>
+      </div>
+
+      <!-- View Switcher (Table vs Grid) -->
+      <div class="view-toggle" role="group" aria-label="View layout switch">
+        <button type="button" data-view-btn="table" aria-pressed="true" title="Table View" aria-label="Table View">
+          {{ icon('table') }}
+        </button>
+        <button type="button" data-view-btn="grid" aria-pressed="false" title="Grid View" aria-label="Grid View">
+          {{ icon('grid') }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Students Roster Section -->
+  <section class="roster reveal" style="--d:2" data-roster data-view="table">
+    <!-- Results Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin: 18px 0 12px; padding: 0 4px;">
+      <span class="muted" style="font-size: 13px;">
+        Showing <b data-visible-count>{{ students|length }}</b> student{{ '' if students|length == 1 else 's' }}
+      </span>
+      {% if filters.q or filters.status or filters.course %}
+      <a href="{{ url_for('students') }}" class="link" style="font-size: 12.5px;">
+        <span>Reset all filters</span>
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Table View -->
+    <div class="card flush spot view-table">
+      <div class="table-wrap">
+        <table class="table" data-sortable>
+          <thead>
+            <tr>
+              <th data-sort>Student Name</th>
+              <th data-sort>ID Code</th>
+              <th data-sort>Academic Course</th>
+              <th data-sort>Status</th>
+              <th class="ta-r">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr data-search="{{ (student.name ~ ' ' ~ student.student_code ~ ' ' ~ student.course_name)|lower }}" data-status="{{ student.status }}">
+              <td>
+                <a class="person" href="{{ url_for('student_profile', student_id=student.id) }}">
+                  <span class="avatar">{{ student.avatar }}</span>
+                  <div class="grow">
+                    <b>{{ student.name }}</b>
+                    <small>{{ student.email or 'No email recorded' }}</small>
+                  </div>
+                </a>
+              </td>
+              <td>
+                <span class="mono">{{ student.student_code }}</span>
+              </td>
+              <td>
+                <span class="muted">{{ student.course_name or 'Not assigned' }}</span>
+              </td>
+              <td>
+                <span class="badge badge-{{ student.status|lower }}">{{ student.status }}</span>
+              </td>
+              <td class="ta-r">
+                <div class="row-actions">
+                  <a href="{{ url_for('student_profile', student_id=student.id) }}" class="icon-btn btn-sm btn-ghost" title="View Profile" aria-label="View Profile">
+                    {{ icon('eye') }}
+                  </a>
+                  {% if can_manage %}
+                  <a href="{{ url_for('edit_student', student_id=student.id) }}" class="icon-btn btn-sm btn-ghost" title="Edit Student" aria-label="Edit Student">
+                    {{ icon('edit') }}
+                  </a>
+                  {% endif %}
+                  {% if current_user.role == 'admin' %}
+                  <form method="post" action="{{ url_for('delete_student', student_id=student.id) }}" data-confirm="Are you sure you want to permanently delete {{ student.name }}? All related attendance, documents, and assessments will be deleted." data-confirm-title="Delete Student Record">
+                    <button type="submit" class="icon-btn btn-sm btn-ghost danger-hover" title="Delete Student" aria-label="Delete Student">
+                      {{ icon('trash') }}
+                    </button>
+                  </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty">
+                  <div class="tile tile-lg c-slate">
+                    {{ icon('students') }}
+                  </div>
+                  <h3>No students found</h3>
+                  <p>Try modifying your search criteria or register a new student.</p>
+                  {% if can_manage %}
+                  <a href="{{ url_for('add_student') }}" class="btn btn-primary">
+                    {{ icon('plus') }}
+                    <span>Add New Student</span>
+                  </a>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grid View -->
+    <div class="view-grid">
+      <div class="student-grid">
+        {% for student in students %}
+        <div class="card spot lift student-card" data-search="{{ (student.name ~ ' ' ~ student.student_code ~ ' ' ~ student.course_name)|lower }}">
+          <span class="avatar avatar-lg">{{ student.avatar }}</span>
+          <h3>{{ student.name }}</h3>
+          <span class="mono muted">{{ student.student_code }}</span>
+          <small>{{ student.course_name or 'Unassigned' }}</small>
+          <div class="meta">
+            <span class="badge badge-{{ student.status|lower }}">{{ student.status }}</span>
+          </div>
+          <div style="display:flex; gap:8px; margin-top: 14px; width:100%;">
+            <a href="{{ url_for('student_profile', student_id=student.id) }}" class="btn btn-sm btn-block" style="flex:1;">
+              {{ icon('user') }}
+              <span>Profile</span>
+            </a>
+            {% if can_manage %}
+            <a href="{{ url_for('edit_student', student_id=student.id) }}" class="icon-btn btn-sm btn-ghost" title="Edit Student">
+              {{ icon('edit') }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Live search empty fallback -->
+    <div class="card empty" data-live-empty hidden style="margin-top: 16px;">
+      <div class="tile tile-lg c-slate">
+        {{ icon('search') }}
+      </div>
+      <h3>No matching records</h3>
+      <p>No student in this cohort matches your search terms.</p>
+    </div>
+  </section>
+</main>
+{% endblock %}

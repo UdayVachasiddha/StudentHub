@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Daily Attendance Register · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Roll Call</div>
+      <h1>Attendance</h1>
+      <p class="sub">Record attendance by date and track presence rates.</p>
+    </div>
+
+    <!-- Date selector with quick date shifts -->
+    <form class="date-nav" method="get" action="{{ url_for('attendance') }}" data-autosubmit>
+      <button type="button" class="icon-btn btn-ghost" data-date-shift="-1" data-target="date-picker" title="Previous Day" aria-label="Previous Day">
+        {{ icon('chevron-left') }}
+      </button>
+
+      <div class="control has-icon">
+        {{ icon('calendar') }}
+        <input type="date" id="date-picker" name="date" class="input" value="{{ selected_date }}" style="width: auto;">
+      </div>
+
+      <button type="button" class="icon-btn btn-ghost" data-date-shift="1" data-target="date-picker" title="Next Day" aria-label="Next Day">
+        {{ icon('chevron-right') }}
+      </button>
+
+      <button type="button" class="btn btn-sm btn-ghost" data-date-shift="today" data-target="date-picker">
+        Today
+      </button>
+    </form>
+  </div>
+
+  <!-- Attendance Live Summary Bar -->
+  <section class="card spot reveal" style="--d:1">
+    <div class="att-summary">
+      <div class="ring t-success" data-att-ring style="--size:90px; --thick:9px;">
+        <div>
+          <strong data-att-rate>0%</strong>
+          <small>Presence</small>
+        </div>
+      </div>
+
+      <div class="att-counts">
+        <div class="att-count" style="--c: var(--success-rgb);">
+          <small>{{ icon('check') }} Present</small>
+          <strong data-att="Present">0</strong>
+        </div>
+        <div class="att-count" style="--c: var(--warning-rgb);">
+          <small>{{ icon('clock') }} Late</small>
+          <strong data-att="Late">0</strong>
+        </div>
+        <div class="att-count" style="--c: var(--danger-rgb);">
+          <small>{{ icon('close') }} Absent</small>
+          <strong data-att="Absent">0</strong>
+        </div>
+      </div>
+
+      <!-- Quick batch mark shortcuts -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm btn-ghost" data-mark-all="Present">
+          {{ icon('check') }}
+          <span>Mark All Present</span>
+        </button>
+        <button type="button" class="btn btn-sm btn-ghost" data-mark-all="Absent">
+          {{ icon('close') }}
+          <span>Mark All Absent</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Register Table Form -->
+  <form method="post" action="{{ url_for('attendance') }}" class="reveal" style="--d:2" data-register>
+    <input type="hidden" name="date" value="{{ selected_date }}">
+
+    <div class="card flush spot" style="margin-top: 20px;">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Course Program</th>
+              <th class="ta-r" style="min-width: 280px;">Mark Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr data-status="{{ student.status or 'Present' }}">
+              <td>
+                <div class="person">
+                  <span class="avatar avatar-sm">{{ student.name[:2]|upper }}</span>
+                  <div class="grow">
+                    <b>{{ student.name }}</b>
+                    <small>ID: STU-{{ student.id + 100 }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="muted">{{ student.course_name or 'General Program' }}</span>
+              </td>
+              <td class="ta-r">
+                <div class="seg">
+                  <input type="radio" id="att-pres-{{ student.id }}" name="student_{{ student.id }}" value="Present" {% if not student.status or student.status == 'Present' %}checked{% endif %}>
+                  <label for="att-pres-{{ student.id }}" class="t-success" title="Present">
+                    {{ icon('check') }}
+                    <span>Present</span>
+                  </label>
+
+                  <input type="radio" id="att-late-{{ student.id }}" name="student_{{ student.id }}" value="Late" {% if student.status == 'Late' %}checked{% endif %}>
+                  <label for="att-late-{{ student.id }}" class="t-warning" title="Late">
+                    {{ icon('clock') }}
+                    <span>Late</span>
+                  </label>
+
+                  <input type="radio" id="att-abs-{{ student.id }}" name="student_{{ student.id }}" value="Absent" {% if student.status == 'Absent' %}checked{% endif %}>
+                  <label for="att-abs-{{ student.id }}" class="t-danger" title="Absent">
+                    {{ icon('close') }}
+                    <span>Absent</span>
+                  </label>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="3">
+                <div class="empty">
+                  <div class="tile tile-lg c-slate">{{ icon('attendance') }}</div>
+                  <h3>No enrolled students to mark</h3>
+                  <p>Register students into courses first to record their attendance.</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Floating Sticky Save Bar -->
+    {% if students %}
+    <div class="save-bar">
+      <div>
+        <span class="dirty-pill">Unsaved attendance changes</span>
+        <span class="clean-pill">Viewing attendance register for {{ selected_date }}</span>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        {{ icon('check') }}
+        <span>Save Attendance Register</span>
+      </button>
+    </div>
+    {% endif %}
+  </form>
+</main>
+{% endblock %}

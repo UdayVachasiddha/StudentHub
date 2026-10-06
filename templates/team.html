@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Team & Roles · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Access</div>
+      <h1>Team & Roles</h1>
+      <p class="sub">Manage user accounts and role permissions.</p>
+    </div>
+  </div>
+
+  <section class="grid grid-side reveal" style="--d:1">
+    <!-- Team Members Table -->
+    <div class="card flush spot">
+      <div class="card-head" style="padding: 24px 24px 12px;">
+        <div class="card-title">
+          <div class="tile tile-sm c-violet">{{ icon('team') }}</div>
+          <div>
+            <h2>Members ({{ users|length }})</h2>
+            <p>Active system users and roles</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" data-sortable>
+          <thead>
+            <tr>
+              <th data-sort>User Profile</th>
+              <th data-sort>Username</th>
+              <th data-sort>System Role</th>
+              <th data-sort>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>
+                <div class="person">
+                  <span class="avatar avatar-sm">{{ u.full_name[:2]|upper }}</span>
+                  <div class="grow">
+                    <b>{{ u.full_name }}</b>
+                    {% if u.id == current_user.id %}
+                    <small class="muted">(Current Session)</small>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="mono muted">@{{ u.username }}</span>
+              </td>
+              <td>
+                <span class="badge role-{{ u.role }}">{{ u.role|title }}</span>
+              </td>
+              <td>
+                <time data-ago datetime="{{ u.created_at }}" class="muted" style="font-size: 12.5px;">{{ u.created_at }}</time>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="4" class="empty">No team accounts found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Create Team Account Form Sticky Card -->
+    <div class="card spot sticky">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="tile tile-sm c-green">{{ icon('plus') }}</div>
+          <div>
+            <h2>Create Account</h2>
+            <p>Grant portal access</p>
+          </div>
+        </div>
+      </div>
+
+      <form method="post" action="{{ url_for('team') }}" class="form-stack">
+        <div class="field">
+          <label class="label" for="full_name">Full Name <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="full_name" name="full_name" class="input" placeholder="e.g. Prof. Ada Lovelace" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="username">Username <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('user') }}
+            <input id="username" name="username" class="input" placeholder="alovelace" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="password">Password <span class="req">*</span></label>
+          <div class="control has-icon has-action">
+            {{ icon('shield') }}
+            <input id="password" type="password" name="password" minlength="8" class="input" placeholder="Minimum 8 characters" required autocomplete="new-password">
+            <button type="button" class="input-action" data-toggle-password aria-label="Show password">
+              <span class="i-eye">{{ icon('eye') }}</span>
+              <span class="i-eye-off">{{ icon('eye-off') }}</span>
+            </button>
+          </div>
+          <!-- Strength meter -->
+          <div class="strength" data-strength="password">
+            <div class="strength-bars">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <span class="strength-label">Use at least 8 characters</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="role">Assigned Role <span class="req">*</span></label>
+          <div class="control has-icon">
+            {{ icon('shield') }}
+            <select id="role" name="role" class="select" required>
+              <option value="staff">Staff (Directory &amp; Records)</option>
+              <option value="teacher">Teacher (Attendance &amp; Grading)</option>
+              <option value="admin">Administrator (Full Access)</option>
+              <option value="student">Student (Read Only)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 8px;">
+          {{ icon('check') }}
+          <span>Provision User Account</span>
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
+{% endblock %}

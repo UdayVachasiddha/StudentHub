@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}About StudentHub · System Architecture{% endblock %}
+
+{% block content %}
+<main class="page">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">System Architecture</div>
+      <h1>About StudentHub</h1>
+      <p class="sub">A unified student lifecycle and operations platform built with Flask, MySQL, and vanilla modern CSS.</p>
+    </div>
+  </div>
+
+  <!-- Hero Overview Card -->
+  <section class="card spot reveal" style="--d:1">
+    <div class="card-head">
+      <div class="card-title">
+        <div class="tile tile-sm c-violet">{{ icon('sparkles') }}</div>
+        <div>
+          <h2>Architectural Philosophy</h2>
+          <p>Production-grade patterns with zero bloated dependencies</p>
+        </div>
+      </div>
+    </div>
+    <p style="font-size: 15px; line-height: 1.7; color: var(--text-2); max-width: 820px;">
+      StudentHub provides academic institutions with a lightweight, responsive, and secure system to track enrollment pipelines, grade distributions, daily presence rosters, administrative documents, and security audit logs.
+    </p>
+
+    <div style="margin-top: 24px;">
+      <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px;">Underlying Technology Stack</h3>
+      <div class="stack-chips">
+        <div class="stack-chip" style="--c: 56, 189, 248;"><i style="background: rgb(var(--c));"></i> Python 3.12</div>
+        <div class="stack-chip" style="--c: 139, 124, 255;"><i style="background: rgb(var(--c));"></i> Flask Microframework</div>
+        <div class="stack-chip" style="--c: 251, 191, 36;"><i style="background: rgb(var(--c));"></i> MySQL Relational Database</div>
+        <div class="stack-chip" style="--c: 52, 211, 153;"><i style="background: rgb(var(--c));"></i> ReportLab PDF Generator</div>
+        <div class="stack-chip" style="--c: 244, 114, 182;"><i style="background: rgb(var(--c));"></i> Custom Glassmorphic CSS Design System</div>
+        <div class="stack-chip" style="--c: 148, 163, 184;"><i style="background: rgb(var(--c));"></i> Native Vanilla JS Interactions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Capabilities Grid -->
+  <section class="grid grid-3 reveal" style="--d:2" style="margin-top: 20px;">
+    <article class="card spot lift feature">
+      <div class="tile c-violet">{{ icon('students') }}</div>
+      <h3>Student Lifecycle</h3>
+      <p>Complete student roster management with avatars, contact channels, guardian details, and enrollment status tracking.</p>
+    </article>
+
+    <article class="card spot lift feature">
+      <div class="tile c-green">{{ icon('attendance') }}</div>
+      <h3>Daily Roll Call</h3>
+      <p>Date-indexed attendance register with presence statistics, batch shortcuts, and instantaneous roll calculation.</p>
+    </article>
+
+    <article class="card spot lift feature">
+      <div class="tile c-sky">{{ icon('courses') }}</div>
+      <h3>Curriculum &amp; Courses</h3>
+      <p>Structured academic catalogs tracking seat capacity, assigned lead instructors, and dynamic enrollment gauges.</p>
+    </article>
+
+    <article class="card spot lift feature">
+      <div class="tile c-amber">{{ icon('award') }}</div>
+      <h3>Assessments &amp; Grading</h3>
+      <p>Score submissions, percentage evaluation, automatic letter grading, and overall cumulative grade average tracking.</p>
+    </article>
+
+    <article class="card spot lift feature">
+      <div class="tile c-pink">{{ icon('document') }}</div>
+      <h3>Document Vault</h3>
+      <p>Secure upload and storage for PDF, DOCX, and image documents with drag-and-drop file dropzone.</p>
+    </article>
+
+    <article class="card spot lift feature">
+      <div class="tile c-red">{{ icon('shield') }}</div>
+      <h3>Role-Based Security</h3>
+      <p>Fine-grained permissions for Admin, Staff, Teacher, and Student roles with audit logging and password hashing.</p>
+    </article>
+  </section>
+</main>
+{% endblock %}

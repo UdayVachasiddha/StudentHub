@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}Notifications · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page narrow">
+  <!-- Page Header -->
+  <div class="page-head reveal" style="--d:0">
+    <div>
+      <div class="eyebrow">Inbox</div>
+      <h1>Notifications</h1>
+      <p class="sub">Updates dispatched for your <strong>{{ current_user.role|title }}</strong> role.</p>
+    </div>
+  </div>
+
+  <section class="card spot reveal" style="--d:1">
+    <div class="card-head">
+      <div class="card-title">
+        <div class="tile tile-sm c-sky">{{ icon('bell') }}</div>
+        <div>
+          <h2>All Notifications</h2>
+          <p>Sorted by newest arrival</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      {% for note in notifications %}
+      <article class="card spot note {% if not note.is_read %}unread{% endif %}">
+        {% set cat = note.category|lower %}
+        {% if cat == 'signup' %}
+          <div class="tile c-amber">{{ icon('user') }}</div>
+        {% elif cat == 'student' %}
+          <div class="tile c-violet">{{ icon('students') }}</div>
+        {% else %}
+          <div class="tile c-sky">{{ icon('bell') }}</div>
+        {% endif %}
+
+        <div>
+          <div class="note-head">
+            <b>{{ note.category|title }} Notification</b>
+            {% if not note.is_read %}
+            <span class="badge badge-primary no-dot" style="font-size: 10px;">New</span>
+            {% endif %}
+          </div>
+          <p>{{ note.message }}</p>
+        </div>
+
+        <time data-ago datetime="{{ note.created_at }}">{{ note.created_at }}</time>
+      </article>
+      {% else %}
+      <div class="empty">
+        <div class="tile tile-lg c-slate">{{ icon('check') }}</div>
+        <h3>You're all caught up!</h3>
+        <p>No unread notifications or alerts for your account right now.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

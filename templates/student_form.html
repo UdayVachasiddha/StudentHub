@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% from 'icons.html' import icon %}
+
+{% block title %}{{ 'Add Student' if mode == 'add' else 'Edit ' ~ student.name }} · StudentHub{% endblock %}
+
+{% block content %}
+<main class="page narrow">
+  <a href="{{ url_for('students') if mode == 'add' else url_for('student_profile', student_id=student.id) }}" class="back-link reveal" style="--d:0">
+    {{ icon('arrow-left') }}
+    <span>{{ 'Back to Directory' if mode == 'add' else 'Back to Profile' }}</span>
+  </a>
+
+  <!-- Header -->
+  <div class="page-head reveal" style="--d:1">
+    <div>
+      <div class="eyebrow">{{ 'NEW ENROLLMENT' if mode == 'add' else 'UPDATE RECORD' }}</div>
+      <h1>{{ 'Register New Student' if mode == 'add' else 'Edit Student Profile' }}</h1>
+      <p class="sub">
+        {{ 'Enter the student details below to create an institutional record.' if mode == 'add' else 'Modify academic and contact records for ' ~ student.name ~ '.' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Form Card -->
+  <section class="card spot reveal" style="--d:2">
+    <!-- Live Avatar Preview Banner -->
+    <div style="display:flex; align-items:center; gap:16px; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border);">
+      <span class="avatar avatar-lg" data-avatar-preview>{{ student.name[:2]|upper if student else 'ST' }}</span>
+      <div>
+        <h3 data-name-preview style="margin:0; font-size: 18px;">{{ student.name if student else 'New Student' }}</h3>
+        <p class="muted" style="font-size: 13px;">{{ student.student_code if student else 'ID assigned automatically upon save' }}</p>
+      </div>
+    </div>
+
+    <form method="post" class="form-grid">
+      <!-- Full Name -->
+      <div class="field full">
+        <label class="label" for="student-name">
+          <span>Full Name <span class="req">*</span></span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('user') }}
+          <input id="student-name" name="name" class="input" placeholder="e.g. Eleanor Vance" required value="{{ student.name if student else '' }}" autofocus data-avatar-source>
+        </div>
+      </div>
+
+      <!-- Email Address -->
+      <div class="field">
+        <label class="label" for="student-email">
+          <span>Email Address</span>
+          <span class="hint">Optional for notifications</span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('mail') }}
+          <input id="student-email" type="email" name="email" class="input" placeholder="eleanor@university.edu" value="{{ student.email or '' if student else '' }}">
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="field">
+        <label class="label" for="student-phone">
+          <span>Phone Number</span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('phone') }}
+          <input id="student-phone" type="tel" name="phone" class="input" placeholder="+1 (555) 234-5678" value="{{ student.phone or '' if student else '' }}">
+        </div>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="field">
+        <label class="label" for="student-dob">
+          <span>Date of Birth</span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('calendar') }}
+          <input id="student-dob" type="date" name="date_of_birth" class="input" value="{{ student.date_of_birth or '' if student else '' }}">
+        </div>
+      </div>
+
+      <!-- Academic Course -->
+      <div class="field">
+        <label class="label" for="student-course">
+          <span>Enrolled Course <span class="req">*</span></span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('courses') }}
+          <select id="student-course" name="course_id" class="select" required>
+            <option value="">Select an academic program</option>
+            {% for course in courses %}
+            <option value="{{ course.id }}" {% if student and student.course_id == course.id %}selected{% endif %}>
+              {{ course.name }} ({{ course.duration_weeks }} wks)
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Status Selection -->
+      <div class="field full">
+        <label class="label">Enrollment Status</label>
+        <div class="seg block">
+          <input type="radio" name="status" id="status-active" value="Active" {% if not student or student.status == 'Active' %}checked{% endif %}>
+          <label for="status-active" class="t-success">
+            {{ icon('check') }}
+            <span>Active Student</span>
+          </label>
+
+          <input type="radio" name="status" id="status-pending" value="Pending" {% if student and student.status == 'Pending' %}checked{% endif %}>
+          <label for="status-pending" class="t-warning">
+            {{ icon('clock') }}
+            <span>Pending Review</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Guardian Name -->
+      <div class="field">
+        <label class="label" for="student-guardian">
+          <span>Parent / Guardian Name</span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('shield') }}
+          <input id="student-guardian" name="guardian_name" class="input" placeholder="e.g. Richard Vance" value="{{ student.guardian_name or '' if student else '' }}">
+        </div>
+      </div>
+
+      <!-- Residential Address -->
+      <div class="field">
+        <label class="label" for="student-address">
+          <span>Residential Address</span>
+        </label>
+        <div class="control has-icon">
+          {{ icon('location') }}
+          <input id="student-address" name="address" class="input" placeholder="Street, City, State" value="{{ student.address or '' if student else '' }}">
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions full" style="margin-top: 14px;">
+        <a href="{{ url_for('students') if mode == 'add' else url_for('student_profile', student_id=student.id) }}" class="btn btn-ghost">
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+          {{ icon('check') }}
+          <span>{{ 'Add Student Record' if mode == 'add' else 'Save Changes' }}</span>
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}
